@@ -8,7 +8,9 @@ import BlogDetails from "./pages/BlogDetails";
 
 import "./App.css";
 
-const API_URL = "http://localhost:5000/api/blogs";
+const API_URL =
+  import.meta.env.VITE_API_URL ||
+  "http://localhost:5000/api/blogs";
 
 function App() {
   const [blogs, setBlogs] = useState([]);
