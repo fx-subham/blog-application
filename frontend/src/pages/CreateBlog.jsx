@@ -9,27 +9,27 @@ function CreateBlog({ addBlog }) {
   const [author, setAuthor] = useState("");
   const [content, setContent] = useState("");
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  
+const handleSubmit = async (e) => {
+  e.preventDefault();
 
+  try {
     const newBlog = {
-      id: Date.now(),
       title,
       author,
-      content,
-      date: new Date().toLocaleDateString("en-IN", {
-        day: "numeric",
-        month: "long",
-        year: "numeric",
-      }),
+      content
     };
 
-    addBlog(newBlog);
+    await addBlog(newBlog);
 
     alert("Blog published successfully!");
 
     navigate("/");
-  };
+  } catch (error) {
+    alert(error.message);
+  }
+};
+
 
   return (
     <div className="create-page">

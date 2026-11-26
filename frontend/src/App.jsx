@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import Home from "./pages/Home";
@@ -8,38 +8,56 @@ import BlogDetails from "./pages/BlogDetails";
 
 import "./App.css";
 
-const initialBlogs = [
-  {
-    id: 1,
-    title: "Getting Started with Web Development",
-    author: "Rahul Sharma",
-    date: "November 26, 2026",
-    content:
-      "Web development is an exciting journey where you can turn your ideas into real-world applications. Start with HTML, CSS and JavaScript."
-  },
-  {
-    id: 2,
-    title: "Why Learning Programming Matters",
-    author: "Amit Kumar",
-    date: "November 25, 2026",
-    content:
-      "Programming helps us solve real-world problems, develop logical thinking and build useful applications."
-  },
-  {
-    id: 3,
-    title: "My Journey as a Computer Science Student",
-    author: "Priya Das",
-    date: "November 24, 2026",
-    content:
-      "Being a computer science student is an exciting experience filled with learning, challenges and opportunities."
-  }
-];
+const API_URL = "http://localhost:5000/api/blogs";
 
 function App() {
-  const [blogs, setBlogs] = useState(initialBlogs);
+  const [blogs, setBlogs] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  const addBlog = (newBlog) => {
-    setBlogs((previousBlogs) => [newBlog, ...previousBlogs]);
+  // Fetch blogs from MongoDB through Express
+  const fetchBlogs = async () => {
+    try {
+      const response = await fetch(API_URL);
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch blogs");
+      }
+
+      const data = await response.json();
+      setBlogs(data);
+      setError("");
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchBlogs();
+  }, []);
+
+  // Publish a new blog
+  const addBlog = async (newBlog) => {
+    const response = await fetch(API_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(newBlog)
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || "Failed to publish blog");
+    }
+
+    setBlogs((previousBlogs) => [
+      data.blog,
+      ...previousBlogs
+    ]);
   };
 
   return (
@@ -47,7 +65,13 @@ function App() {
       <Routes>
         <Route
           path="/"
-          element={<Home blogs={blogs} />}
+          element={
+            <Home
+              blogs={blogs}
+              loading={loading}
+              error={error}
+            />
+          }
         />
 
         <Route

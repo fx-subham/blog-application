@@ -2,7 +2,7 @@
 import { Link } from "react-router-dom";
 import { PenLine, BookOpen, ArrowRight } from "lucide-react";
 
-function Home({ blogs }) {
+function Home({ blogs, loading, error }) {
   return (
     <div className="home-page">
       <nav className="navbar">
@@ -44,9 +44,17 @@ function Home({ blogs }) {
           <p>Explore thoughts and stories from different authors.</p>
         </div>
 
+        {loading && <p>Loading blogs...</p>}
+
+        {error && <p className="error-message">{error}</p>}
+
+        {!loading && !error && blogs.length === 0 && (
+          <p>No blogs published yet. Be the first to write!</p>
+        )}
+
         <div className="blog-grid">
           {blogs.map((blog) => (
-            <article className="blog-card" key={blog.id}>
+            <article className="blog-card" key={blog._id}>
               <div className="blog-card-top">
                 <span className="blog-label">ARTICLE</span>
                 <BookOpen size={20} />
@@ -54,15 +62,26 @@ function Home({ blogs }) {
 
               <h3>{blog.title}</h3>
 
-              <p className="blog-content">{blog.content}</p>
+              <p className="blog-content">
+                {blog.content}
+              </p>
 
               <div className="blog-meta">
                 <span>By {blog.author}</span>
-                <span>{blog.date}</span>
+                <span>
+                  {new Date(blog.createdAt).toLocaleDateString(
+                    "en-IN",
+                    {
+                      day: "numeric",
+                      month: "long",
+                      year: "numeric"
+                    }
+                  )}
+                </span>
               </div>
 
               <Link
-                to={`/blog/${blog.id}`}
+                to={`/blog/${blog._id}`}
                 className="read-link"
               >
                 Read Article <ArrowRight size={16} />

@@ -1,17 +1,22 @@
 
 import { Link, useParams } from "react-router-dom";
-import { BookOpen, ArrowLeft, CalendarDays, User } from "lucide-react";
+import {
+  BookOpen,
+  ArrowLeft,
+  CalendarDays,
+  User
+} from "lucide-react";
 
 function BlogDetails({ blogs }) {
   const { id } = useParams();
 
-  const blog = blogs.find((item) => item.id === Number(id));
+  const blog = blogs.find((item) => item._id === id);
 
   if (!blog) {
     return (
       <div className="not-found">
         <h2>Blog Not Found</h2>
-        <p>Sorry, the blog you are looking for does not exist.</p>
+        <p>The requested blog could not be found.</p>
         <Link to="/">Back to Home</Link>
       </div>
     );
@@ -50,7 +55,14 @@ function BlogDetails({ blogs }) {
 
             <span>
               <CalendarDays size={17} />
-              {blog.date}
+              {new Date(blog.createdAt).toLocaleDateString(
+                "en-IN",
+                {
+                  day: "numeric",
+                  month: "long",
+                  year: "numeric"
+                }
+              )}
             </span>
           </div>
 
